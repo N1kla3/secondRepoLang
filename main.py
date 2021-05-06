@@ -9,25 +9,26 @@ from fpdf import FPDF
 
 
 def run(sample_text):
-
     # optional
-    # nltk.download('punkt')
-    # nltk.download('averaged_perceptron_tagger')
+    nltk.download('punkt')
+    nltk.download('averaged_perceptron_tagger')
 
     from nltk import pos_tag, word_tokenize, RegexpParser
 
     tagged = pos_tag(word_tokenize(sample_text))
 
     chunker = RegexpParser("""
-                       Noun Phrase: {<DT>?<JJ>*<NN>}    #To extract Noun Phrases
-                       Preposition: {<IN>}               #To extract Prepositions
-                       Verbs: {<V.*>}              #To extract Verbs
-                       Prepostional Phrases: {<P> <NP>}          #To extract Prepostional Phrases
-                       Verb Phrases: {<V> <NP|PP>*}      #To extarct Verb Phrases
+                        NP: {<CD>?<DT>?<JJ>*<NN|NNS>}    #To extract Noun Phrases
+                       P: {<IN>}               #To extract Prepositions
+                       V: {<MD>?<V.*>}              #To extract Verbs
+                       PP: {<P> <NP>}          #To extract Prepostional Phrases
+                       VP: {<V> <NP|PP>*} 
                        """)
 
     output = chunker.parse(tagged, 2)
     # verbose level
+    output.draw()
+    return
     TreeView(output)._cframe.print_to_file('output.ps')
     os.system('magick output.ps outputs.png')
     pdf = FPDF()
